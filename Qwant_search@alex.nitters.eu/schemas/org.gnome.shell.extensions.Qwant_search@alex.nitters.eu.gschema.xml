@@ -1,0 +1,69 @@
+<schemalist gettext-domain="Qwant_search@alex.nitters.eu">
+  <enum id="org.gnome.shell.extensions.Qwant_search@alex.nitters.eu.category">
+    <value value="0" nick="all"/>
+    <value value="1" nick="web"/>
+    <value value="2" nick="news"/>
+    <value value="3" nick="social"/>
+    <value value="4" nick="images"/>
+    <value value="5" nick="videos"/>
+    <value value="6" nick="shopping"/>
+    <value value="7" nick="music"/>
+  </enum>
+  <enum id="org.gnome.shell.extensions.Qwant_search@alex.nitters.eu.engine">
+    <value value="0" nick="qwant"/>
+    <value value="1" nick="junior"/>
+    <value value="2" nick="edu"/>
+    <value value="3" nick="lite"/>
+  </enum>
+  <schema
+    id="org.gnome.shell.extensions.Qwant_search@alex.nitters.eu"
+    path="/org/gnome/shell/extensions/Qwant_search@alex.nitters.eu/">
+    <key name="panel-button" type="b">
+        <default>true</default>
+    </key>
+    <key name="category" enum="org.gnome.shell.extensions.Qwant_search@alex.nitters.eu.category">
+      <default>'all'</default>
+    </key>
+        <key name="search-engine" enum="org.gnome.shell.extensions.Qwant_search@alex.nitters.eu.engine">
+      <default>'qwant'</default>
+    </key>
+
+    <key name="hide-all" type="b">
+        <default>false</default>
+    </key>
+    <key name="activate-suggestions" type="b">
+        <default>true</default>
+    </key>
+    <key name="max-suggestions" type="i">
+        <default>0</default>
+    </key>
+    <key name="suggest-shortcut" type="s">
+        <default>""</default>
+    </key>
+
+    <key name="disable-shortcuts" type="b">
+        <default>false</default>
+    </key>
+    <key name="web-shortcut" type="s">
+        <default>"q"</default>
+    </key>
+    <key name="news-shortcut" type="s">
+        <default>"q-news"</default>
+    </key>
+    <key name="social-shortcut" type="s">
+        <default>"q-social"</default>
+    </key>
+    <key name="images-shortcut" type="s">
+        <default>"q-images"</default>
+    </key>
+    <key name="videos-shortcut" type="s">
+        <default>"q-videos"</default>
+    </key>
+    <key name="shopping-shortcut" type="s">
+        <default>"q-shopping"</default>
+    </key>
+    <key name="music-shortcut" type="s">
+        <default>"q-music"</default>
+    </key>
+  </schema>
+</schemalist>

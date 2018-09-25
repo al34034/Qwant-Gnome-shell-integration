@@ -1,44 +1,169 @@
-# English translations for PACKAGE package.
-# Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-#  <al34034.n@gmail.com>, 2018.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
 #
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: \n"
+"Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2018-02-23 16:03+0100\n"
-"PO-Revision-Date: 2018-02-23 16:06+0100\n"
-"Last-Translator: al34034.n@gmail.com\n"
-"Language-Team: English\n"
-"Language: en\n"
+"POT-Creation-Date: 2018-02-27 14:54+0100\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=ISO-8859-1\n"
+"Content-Type: text/plain; charset=CHARSET\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.4\n"
 
-#: extension.js:26
+#: extension.js:63
 #Locale used when fetching suggestions
 msgid "fr"
 msgstr "en"
 
-#: extension.js:77
-#Name that appears beside the search results
-msgid "Recherche Qwant"
-msgstr "Qwant Search"
+#: extension.js:114
+#Name that appears beside the search results ("Qwant Search")
+msgid "Qwant Search"
+msgstr ""
 
-#: extension.js:126
-#First result to search directly for {terms}
+#General search
+
+#: extension.js:164
+#First result to continue search in browser (keyword search) ("Continue with {engine} {category}")
+msgid "Continuer sur {engine} {category}"
+msgstr "Continue with {enine} {category}"
+
+#: extension.js:167
+#First result to search directly for {terms} in browser (suggestions) ("Search \"{terms}\" with Qwant")
 msgid "Rechercher \"{terms}\" avec Qwant"
 msgstr "Search \"{terms}\" with Qwant"
 
-#: extension.js:189
-#Title of the message dislayed when there is no internet or the request failed
-msgid "Erreur"
-msgstr "Request failed"
+#Search categories
 
-#: extension.js:190
+#Web
+#: prefs.js:76 extension.js:162
+msgid "Web"
+msgstr "Web"
+
+#News
+#: prefs.js:77 extension.js:162
+msgid "Actualités"
+msgstr "News"
+
+#Social
+#: prefs.js:78 extension.js:162
+msgid "Social"
+msgstr "Social"
+
+#Images
+#: prefs.js:79 extension.js:162
+msgid "Images"
+msgstr "Images"
+
+#Videos
+#: prefs.js:80 extension.js:162
+msgid "Vidéos"
+msgstr "Videos"
+
+#Shopping extension.js:162
+#: prefs.js:81
+msgid "Shopping"
+msgstr "Shopping"
+
+#Music
+#: prefs.js:82 extension.js:162
+msgid "Musique"
+msgstr "Music"
+
+#Moteurs de recherche
+
+#Qwant
+#: prefs.js:92 extension.js:162
+msgid "Qwant"
+msgstr "Qwant"
+
+#Qwant Junior
+#: prefs.js:93 extension.js:162
+msgid "Qwant Junior"
+msgstr "Qwant Junior"
+
+#Qwant Edu (junior, education version)
+#: prefs.js:94 extension.js:162
+msgid "Qwant Edu"
+msgstr "Qwant Edu"
+
+#Qwant Lite
+#: prefs.js:95 extension.js:162
+msgid "Qwant Lite"
+msgstr "Qwant Lite"
+
+#Error while fetching suggestions or results
+
+#: extension.js:255 extension.js:312
+#Title of the message dislayed when there is no internet or the request failed ("Error")
+msgid "Erreur"
+msgstr "Error"
+
+#: extension.js:256 extension.js:313
 #Explanation of the above error ("Please check your Internet or try again later")
 msgid "Veuillez vérifier votre connexion Internet ou réessayer plus tard"
-msgstr "Please check your Internet or try again later"
+msgstr "Please check your Internet connexion or try again later"
+
+#Settings
+
+#: prefs.js:70
+#Needs logout label ("(Needs logout)")
+msgid "(Nécéssite la déconnexion)"
+msgstr "(Needs logout)"
+
+#: prefs.js:70
+#Setting to display the panel button ("Panel button")
+msgid "Bouton Qwant dans la barre système"
+msgstr "Panel button"
+
+
+#: prefs.js:85
+#Setting to select search category ("Search category")
+msgid "Catégorie de recherche"
+msgstr "Search category"
+
+#: prefs.js:98
+#Setting to select search engine : Qwant, Qwant Junior, Qwant Lite... ("Search engine")
+msgid "Moteur de recherche"
+msgstr "Search engine"
+
+#: prefs.js:105
+#Label for suggestions part ("Suggestions")
+msgid "Suggestions"
+msgstr "Search suggestions"
+
+#: prefs.js:108
+#Setting to completely disable suggestions ("Completely disable search without keywords (only search keywords will be enabled)")
+msgid "Complètement désactiver la recherche sans raccourci (seuls les raccourcis de recherche seront activés)"
+msgstr "Completely disable search without keywords (only search keywords will be enabled)"
+
+#: prefs.js:113
+#Setting to show suggestions ("Show suggestions (the search option will always be available)")
+msgid "Afficher les suggestions (l'option recherche sera toujours présente)"
+msgstr "Show suggestions (the search option will always be available)"
+
+#: prefs.js:123
+#Setting to set max number of suggestions ("Maximum number of suggestions (set to 0 to disable)")
+msgid "Nombre maximal de suggestions (laissez à 0 pour ne pas limiter)"
+msgstr "Maximum number of suggestions (set to 0 to disable)"
+
+#: prefs.js:129
+#Setting to set suggestions keyword ("Suggestions keyword (leave empty to always show)")
+msgid "Raccourci pour les suggestions (laissez vide pour toujours montrer)"
+msgstr "Suggestions keyword (leave empty to always show)"
+
+#: prefs.js:134
+#Label for search keywords part ("Search keywords (leave empty to disable)")
+msgid "Raccourcis pour la recherche (laissez vide pour désactiver)"
+msgstr "Search keywords (leave empty to disable)"
+
+#: prefs.js:136
+#Setting to completely disable search ("Disable search")
+msgid "Complètement désactiver la recherche"
+msgstr "Disable search"

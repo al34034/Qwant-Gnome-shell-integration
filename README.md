@@ -1,19 +1,20 @@
 # Qwant-Gnome-shell-integration
-A Gnome-shell extension to be able to search Qwant directly from the overview (still under developement)
-Only for Gnome 3.26.2
+A Gnome-shell extension to be able to search Qwant directly from the overview (Only for Gnome 3.26.2)
 
-Intall : https://extensions.gnome.org/extension/1389/qwant-search/
+Install : https://extensions.gnome.org/extension/1389/qwant-search/
 
 # Features :
  - Get suggestions and search Qwant directly from the Overview.
+ - Use keywords to directly search for results (configure in settings) [Work in Progress]
  - Special suggestions and Qwicks (access or search directly from websites using "&")
- - Adds a button to the top panel to launch Qwant directly
+ - Adds a button to the top panel to launch Qwant directly (remove via settings)
+ - Select search category in extension settings
 
 Screenshot :
 ![Screenshot](Qwant_search@alex.nitters.eu/Screen.png)
 
 # To come:
- - Extension settings, including number of suggestions, panel icon, or default search category (all, web, news, images...)
+ - More settings, such as max number of suggestions
  - If you have other ideas, open an issue : https://github.com/al34034/Qwant-Gnome-shell-integration/issues/new
  
  # How to install :
@@ -31,6 +32,15 @@ Screenshot :
  ```
  Restart gnome-shell : Alt+F2 and type "r" or logout/login.
  
+ # Settings :
+ 
+ Use the Tweaks application and navigate to Extensions > Qwant Search > Settings icon
+ 
+ *Or* 
+ 
+ Run `gnome-shell-extension-prefs` and look for Qwant search
+ 
+ Settings : panel button and search category
  
  # Uninstall :
  Disable via Tweaks or extensions.gnome.org.

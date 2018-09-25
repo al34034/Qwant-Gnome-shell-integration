@@ -1,14 +1,14 @@
-# Ukrainian translations for PACKAGE package.
+# Ukrainian translations for Qwant_search@alex.nitters.eu package.
 # Copyright (C) 2018 THE PACKAGE'S COPYRIGHT HOLDER
-# This file is distributed under the same license as the PACKAGE package.
-# g00dy22 <g00dy22@mt2014.com>, 2018.
+# This file is distributed under the same license as the Qwant_search@alex.nitters.eu package.
+#  <al34034.n@gmail.com>, 2018.
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: Qwant-Gnome-shell-integration\n"
+"Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2018-02-23 16:03+0100\n"
-"PO-Revision-Date: 2018-03-31 16:36+0300\n"
+"PO-Revision-Date: 2018-09-26 02:32+0300\n"
 "Last-Translator: g00dy22 <g00dy22@mt2014.com>\n"
 "Language-Team: Ukrainian\n"
 "Language: uk\n"
@@ -16,29 +16,149 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 2.0.6\n"
+"X-Generator: Poedit 2.1.1\n"
 
 # Locale used when fetching suggestions
-#: extension.js:26
+#: extension.js:63
 msgid "fr"
 msgstr "uk"
 
-# Name that appears beside the search results
-#: extension.js:77
+# Name that appears beside the search results ("Qwant Search")
+#: extension.js:114
 msgid "Recherche Qwant"
 msgstr "Пошук Qwant"
 
-# First result to search directly for {terms}
-#: extension.js:126
+# General search
+# First result to continue search in browser (keyword search) ("Continue with Qwant {category}")
+#: extension.js:164
+msgid "Continuer sur {engine} {category}"
+msgstr "Продовжити пошук в {engine} {category}"
+
+# First result to search directly for {terms} in browser (suggestions) ("Search \"{terms}\" with Qwant")
+#: extension.js:167
 msgid "Rechercher \"{terms}\" avec Qwant"
 msgstr "Шукати \"{terms}\" з Qwant"
 
-# Title of the message dislayed when there is no internet or the request failed
-#: extension.js:189
+# Search categories
+# Web
+#: prefs.js:76 extension.js:162
+msgid "Web"
+msgstr "Web"
+
+# News
+#: prefs.js:77 extension.js:162
+msgid "Actualités"
+msgstr "Новини"
+
+# Social
+#: prefs.js:78 extension.js:162
+msgid "Social"
+msgstr "Соцмережі"
+
+# Images
+#: prefs.js:79 extension.js:162
+msgid "Images"
+msgstr "Зображення"
+
+# Videos
+#: prefs.js:80 extension.js:162
+msgid "Vidéos"
+msgstr "Відео"
+
+# Shopping extension.js:162
+#: prefs.js:81
+msgid "Shopping"
+msgstr "Покупки"
+
+# Music
+#: prefs.js:82 extension.js:162
+msgid "Musique"
+msgstr "Музика"
+
+# Moteurs de recherche
+# Qwant
+#: prefs.js:92 extension.js:162
+msgid "Qwant"
+msgstr "Qwant"
+
+# Qwant Junior
+#: prefs.js:93 extension.js:162
+msgid "Qwant Junior"
+msgstr "Qwant Junior"
+
+# Qwant Edu (junior, education version)
+#: prefs.js:94 extension.js:162
+msgid "Qwant Edu"
+msgstr "Qwant Edu"
+
+# Qwant Lite
+#: prefs.js:95 extension.js:162
+msgid "Qwant Lite"
+msgstr "Qwant Lite"
+
+# Error while fetching suggestions or results
+# Title of the message dislayed when there is no internet or the request failed ("Error")
+#: extension.js:255 extension.js:312
 msgid "Erreur"
 msgstr "Помилка"
 
 # Explanation of the above error ("Please check your Internet or try again later")
-#: extension.js:190
-msgid "Veuillez vÃ©rifier votre connexion Internet ou rÃ©essayer plus tard"
+#: extension.js:256 extension.js:313
+msgid "Veuillez vérifier votre connexion Internet ou réessayer plus tard"
 msgstr "Перевірте з'єднання та спробуйте ще раз"
+
+# Settings
+# Needs logout label ("(Needs logout)")
+#: prefs.js:70
+msgid "(Nécéssite la déconnexion)"
+msgstr "(маєте перезайти)"
+
+# Setting to display the panel button ("Panel button")
+#: prefs.js:70
+msgid "Bouton Qwant dans la barre système"
+msgstr "Кнопка Qwant на системній панелі"
+
+# Setting to select search category ("Search category")
+#: prefs.js:85
+msgid "Catégorie de recherche"
+msgstr "Категорія пошуку"
+
+# Setting to select search engine : Qwant, Qwant Junior, Qwant Lite... ("Search engine")
+#: prefs.js:98
+msgid "Moteur de recherche"
+msgstr "Пошукова система"
+
+# Label for suggestions part ("Suggestions")
+#: prefs.js:105
+msgid "Suggestions"
+msgstr "Пошукові пропозиції"
+
+# Setting to completely disable suggestions ("Completely disable search without shortcuts (only search shortcuts will be enabled)")
+#: prefs.js:108
+msgid "Complètement désactiver la recherche sans raccourci (seuls les raccourcis de recherche seront activés)"
+msgstr "Повністю відключити пошукові підказки (лише ярлики пошуку будуть активні)"
+
+# Setting to show suggestions ("Show suggestions (the search option will always be available)")
+#: prefs.js:113
+msgid "Afficher les suggestions (l'option recherche sera toujours présente)"
+msgstr "Показати пропозиції (опція пошуку залишиться)"
+
+# Setting to set max number of suggestions ("Maximum number of suggestions (set to 0 to disable)")
+#: prefs.js:123
+msgid "Nombre maximal de suggestions (laissez à 0 pour ne pas limiter)"
+msgstr "Обмеження кількості пропозицій (0 - не обмежувати)"
+
+# Setting to set suggestions keyword ("Suggestions keyword (leave empty to always show)")
+#: prefs.js:129
+msgid "Raccourci pour les suggestions (laissez vide pour toujours montrer)"
+msgstr "Ключове слово для пропозицій (лишіть попрожнім щоб показувати завжди)"
+
+# Label for search keywords part ("Search keywords (leave empty to disable)")
+#: prefs.js:134
+msgid "Raccourcis pour la recherche (laissez vide pour désactiver)"
+msgstr "Ключові слова для пошуку (лишить порожнім для вимкнення)"
+
+# Setting to completely disable search ("Disable search")
+#: prefs.js:136
+msgid "Complètement désactiver la recherche"
+msgstr "Повністю вимкнути пошук"

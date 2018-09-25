@@ -1,4 +1,17 @@
-// create atom project opener
+//   This library is free software; you can redistribute it and/or
+//   modify it under the terms of the GNU Library General Public
+//   License as published by the Free Software Foundation; either
+//   version 3 of the License, or (at your option) any later version.
+//
+//   This library is distributed in the hope that it will be useful,
+//   but WITHOUT ANY WARRANTY; without even the implied warranty of
+//   MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
+//   Library General Public License for more details.
+//
+//   You should have received a copy of the GNU Library General Public
+//   License along with this library; if not, write to the Free Software
+//   Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
+
 // view log: journalctl /usr/bin/gnome-session -f -o cat
 
 const Meta = imports.gi.Meta;
@@ -9,8 +22,10 @@ const Shell = imports.gi.Shell;
 const Gio = imports.gi.Gio;
 const Tweener = imports.ui.tweener;
 const Params = imports.misc.params;
-const Me = imports.misc.extensionUtils.getCurrentExtension();
+const ExtensionUtils = imports.misc.extensionUtils;
+const Me = ExtensionUtils.getCurrentExtension();
 const Soup = imports.gi.Soup;
+const Convenience = Me.imports.convenience;
 
 const Gettext = imports.gettext;
 
@@ -19,19 +34,43 @@ Gettext.bindtextdomain("Qwant_search@alex.nitters.eu", Me.path + "/locale");
 
 const _ = Gettext.gettext;
 
+const preferences = Convenience.getSettings();
+
 let qwantSearchProvider = null;
 
-const searchUrl = "https://www.qwant.com/?q=";
-const suggestionsUrl = "https://api.qwant.com/api/suggest";
-const qwantLocale = _("fr");
-const _httpSession = new Soup.Session();
+let searchUrlMap = {
+  "qwant": 'https://www.qwant.com/?t={category}&q=',
+  "junior": 'https://www.qwantjunior.com/?t={category}&q=',
+  "edu": 'https://www.edu.qwantjunior.com/?t={category}&q=',
+  "lite": 'https://www.lite.qwant.com/?t={category}&q='
+};
+let suggestionsUrlMap = {
+  "qwant": 'https://api.qwant.com/api/suggest',
+  "junior": 'https://api.qwant.com/api/suggest',
+  "edu": 'https://api.qwant.com/api/suggest',
+  "lite": 'https://api.qwant.com/api/suggest'
+};
+let requestUrlMap = {
+  "qwant": 'https://api.qwant.com/api/search/{category}',
+  "junior": 'https://api.qwant.com/api/search/{category}',
+  "edu": 'https://api.qwant.com/api/search/{category}',
+  "lite": 'https://api.qwant.com/api/search/{category}'
+};
+
+let searchUrl = searchUrlMap[preferences.get_string("search-engine")];
+let suggestionsUrl = suggestionsUrlMap[preferences.get_string("search-engine")];
+let requestUrl = requestUrlMap[preferences.get_string("search-engine")];
+let qwantLocale = _("fr");
+let _httpSession = new Soup.Session();
 
 let button;
 let baseGIcon;
 let hoverGIcon;
 let buttonIcon;
 
-let debug = false;
+let currentRequest = null;
+
+let debug = true;
 
 function logDebug() {
   if (debug) {
@@ -68,10 +107,8 @@ function makeLaunchContext(params) {
 const QwantSearchProvider = new Lang.Class({
   Name: 'QwantSearchProvider',
 
-  _init : function(title, categoryType) {
-    this._categoryType = categoryType;
-    this._title = title;
-    this.id = 'qwant-search-' + title;
+  _init : function() {
+    this.id = 'qwant-search';
     this.appInfo = {
       get_name : function() {
         return _("Recherche Qwant");
@@ -91,8 +128,6 @@ const QwantSearchProvider = new Lang.Class({
   _getResultSet: function(terms) {
     logDebug("getResultSet");
     const resultIds = Array.from(this.qwantResults.keys())
-
-
     logDebug("found " + resultIds.length + " results" );
     return resultIds;
   },
@@ -118,19 +153,44 @@ const QwantSearchProvider = new Lang.Class({
     }
   },
 
-  processTerms: function(terms, callback, cancellable) {
+  processTerms: function(terms, callback, cancellable, isSearch, category) {
     this.qwantResults.clear();
     const joined = terms.join(" ");
+    let url = null;
+    let description = null;
+    let original = ["web", "news", "social", "images", "videos", "shopping", "music", "qwant", "junior", "edu", "lite"]
+    let translations = [_("Web"), _("Actualités"), _("Social"), _("Images"), _("Vidéos"), _("Shopping"), _("Musique"), _("Qwant"), _("Qwant Junior"), _("Qwant Edu"), _("Qwant Lite")]
+    logDebug(preferences.get_string("search-engine"));
+    if (isSearch) {
+      description = _("Continuer sur {engine} {category}");
+      url = (searchUrl.replace('{category}', category)) + encodeURIComponent(joined) + "#";
+    } else {
+      description = _("Rechercher \"{terms}\" avec Qwant");
+      url = searchUrl + encodeURIComponent(joined) + "#";
+    }
     this.qwantResults.set(
-      searchUrl + encodeURIComponent(joined) + "#",
-      makeResult(_("Rechercher \"{terms}\" avec Qwant").replace("{terms}", joined),
-      " ",
-      function() {},
-      searchUrl + encodeURIComponent(joined) + "#")
+      url,
+      makeResult(
+        _(description)
+          .replace("{terms}", joined)
+          .replace("{category}", translations[original.indexOf(category)])
+          .replace("{engine}", translations[original.indexOf(preferences.get_string("search-engine"))]),
+        " ",
+        function() {},
+        url
+      )
     );
     logDebug("ProcessTerms: " + joined);
-    logDebug("Search with: " + joined);
-    this.getSuggestions(terms, callback)
+    if (isSearch) {
+      this.getSearchResults(terms, callback);
+    }
+    else {
+      if (preferences.get_boolean('activate-suggestions')) {
+        this.getSuggestions(terms, callback, category);
+      } else {
+        callback(this._getResultSet(terms));
+      }
+    }
   },
 
   getSuggestions: function(terms, callback) {
@@ -139,9 +199,17 @@ const QwantSearchProvider = new Lang.Class({
     const request = Soup.form_request_new_from_hash(
       'GET',
       suggestionsUrl,
-      {'q':joined, 'lang': qwantLocale}
+      {'q': joined, 'lang': qwantLocale}
     );
-    logDebug("getSuggestions: ")
+    logDebug("getSuggestions: " + joined)
+
+    if (currentRequest != null) {
+      logDebug("Previous request found, canceling");
+      _httpSession.cancel_message(currentRequest, 600);
+    }
+
+    logDebug("Setting currentRequest for future use");
+    currentRequest = request;
 
     _httpSession.queue_message(request, Lang.bind(this,
       function (_httpSession, response) {
@@ -158,8 +226,8 @@ const QwantSearchProvider = new Lang.Class({
               return {
                 type: "special",
                 name: suggestion.value,
-                description: suggestion.site_name, url:
-                searchUrl + encodeURIComponent(suggestion.value)
+                description: suggestion.site_name,
+                url: searchUrl + encodeURIComponent(suggestion.value)
               };
             }
             else {
@@ -184,27 +252,85 @@ const QwantSearchProvider = new Lang.Class({
           logDebug("Array: " + JSON.stringify(suggestions));
         }
         else {
+          if (suggestion != 600) {
+            logDebug("No internet or request failed, cannot get suggestions");
+            suggestions = [{
+              type: "special",
+              name: _("Erreur"),
+              description: _("Veuillez vérifier votre connexion Internet ou réessayer plus tard"),
+              url: " "
+            }];
+            logDebug("Array: " + JSON.stringify(suggestions));
+          }
+        }
+        currentRequest = null;
+        logDebug("Displaying suggestions");
+        this.displaySuggestions(suggestions, callback, terms, false);
+      })
+    );
+
+  },
+
+  getSearchResults: function(terms, callback, category) {
+    const joined = terms.join(" ");
+    let results = {};
+    const request = Soup.form_request_new_from_hash(
+      'GET',
+      requestUrl.replace('{category}', category),
+      {'q': joined, 'lang': qwantLocale}
+    );
+    logDebug("getSearchResults: " + joined);
+
+    if (currentRequest != null) {
+      logDebug("Previous request found, canceling");
+      _httpSession.cancel_message(currentRequest, 600);
+    }
+
+    logDebug("Setting currentRequest for future use");
+    currentRequest = request;
+
+    _httpSession.queue_message(request, Lang.bind(this,
+      function (_httpSession, response) {
+        logDebug("Statuscode: " + response.status_code);
+        if (response.status_code === 200) {
+          const json = JSON.parse(response.response_body.data);
+          const jsonItems = json.data.items;
+          logDebug("bodydata", response.response_body.data);
+          const parsedItems = jsonItems
+          .filter(results => result.value != joined)
+          .map(result => {
+            return {
+              type: "special",
+              name: suggestion.value,
+              description: suggestion.url,
+              url: suggestion.url,
+            };
+          });
+          results = parsedItems
+          logDebug("Array: " + JSON.stringify(results));
+        }
+        else {
           logDebug("No internet or request failed, cannot get suggestions");
-          suggestions = [{
+          results = [{
             type: "special",
             name: _("Erreur"),
             description: _("Veuillez vérifier votre connexion Internet ou réessayer plus tard"),
             url: " "
           }];
-          logDebug("Array: " + JSON.stringify(suggestions));
+          logDebug("Array: " + JSON.stringify(results));
         }
-        this.displaySuggestions(suggestions, callback, terms);
-
+        currentRequest = null;
+        logDebug("Displaying suggestions");
+        this.displaySuggestions(results, callback, terms, true);
       })
     );
-
-
-
-    /********************TODO: Get results from Qwant********************/
-
   },
 
-  displaySuggestions: function(suggestions, callback, terms) {
+  displaySuggestions: function(suggestions, callback, terms, isSearch) {
+    if ((preferences.get_int('max-suggestions') != 0) && (isSearch == false)) {
+      suggestions.splice(preferences.get_int("max-suggestions"), (suggestions.length - preferences.get_int("max-suggestions")));
+    }
+
     suggestions.forEach(suggestion => {
       if (suggestion.type == "suggestion") {
         this.qwantResults.set(
@@ -238,7 +364,7 @@ const QwantSearchProvider = new Lang.Class({
     const url = resultId;
     logDebug("url: " + url)
     Gio.app_info_launch_default_for_uri(
-      url,
+      url.replace("{category}", preferences.get_string('category')),
       makeLaunchContext({})
     );
   },
@@ -252,9 +378,53 @@ const QwantSearchProvider = new Lang.Class({
   },
 
   getInitialResultSet: function(terms, callback, cancellable) {
-    logDebug("SuggestionId: " + this.suggestionId);
     logDebug("getInitialResultSet: " + terms.join(" "));
-    this.processTerms(terms, callback, cancellable);
+    searchUrl = searchUrlMap[preferences.get_string("search-engine")];
+    suggestionsUrl = suggestionsUrlMap[preferences.get_string("search-engine")];
+    requestUrl = requestUrlMap[preferences.get_string("search-engine")];
+    let categories = ["web-shortcut", "news-shortcut", "social-shortcut", "images-shortcut", "shopping-shortcut", "videos-shortcut", "music-shortcut"]
+    let isSearch = false;
+    let category = null;
+    let editTerms = terms;
+    logDebug("Testing for keywords");
+    for (let i = 0; i < categories.length; i++) {
+      let keyword = preferences.get_string(categories[i]);
+      logDebug("Current keyword : " + keyword + " and current term to match : " + terms.slice(0, keyword.split(" ").length));
+      if (preferences.get_boolean('disable-shortcuts') == false) {
+        if ((keyword != "") && (keyword == terms.slice(0, keyword.split(" ").length).join(" ")) && (terms.slice((keyword.split(" ").length), terms.length) != "")) {
+          logDebug("Found, doing search")
+          isSearch = true;
+          category = categories[i].replace('-shortcut', '');
+          editTerms = terms.slice((keyword.split(" ").length), terms.length)
+        }
+      }
+    }
+
+    let shortcut = preferences.get_string('suggest-shortcut');
+    if ((shortcut != "") && (shortcut == terms.slice(0, shortcut.split(" ").length).join(" "))) {
+      editTerms = terms.slice((shortcut.split(" ").length), terms.length)
+    }
+
+    if (isSearch == false) {
+      logDebug("Is not a search, checking suggest keyword")
+      if (shortcut == "") {
+        logDebug("Keyword is empty")
+        this.processTerms(editTerms, callback, cancellable, isSearch, category);
+      } else {
+        logDebug("Matching suggest keyword with terms")
+        if (shortcut == terms.slice(0, shortcut.split(" ").length).join(" ")) {
+          logDebug("Suggest keyword matches")
+          if (editTerms != "") {
+            this.processTerms(editTerms, callback, cancellable, isSearch, category);
+          }
+        } else {
+          logDebug("Suggest keyword does not match")
+        }
+      }
+    } else {
+      logDebug("Is a search, ignoring suggest keyword")
+      this.processTerms(editTerms, callback, cancellable, isSearch, category);
+    }
   },
 
   filterResults: function(results, maxResults) {
@@ -265,10 +435,8 @@ const QwantSearchProvider = new Lang.Class({
 
   getSubsearchResultSet: function(previousResults, terms, callback, cancellable) {
     logDebug("getSubSearchResultSet: " + terms.join(" "));
-    this.processTerms(terms, callback, cancellable, );
+    this.getInitialResultSet(terms, callback, cancellable, );
   },
-
-
 });
 
 function _openQwant() {
@@ -301,7 +469,7 @@ function init(extensionMeta) {
 
   button.set_child(buttonIcon);
   button.connect(
-    'button-press-event',
+    'button-release-event',
     Lang.bind(this, _openQwant)
   );
   button.connect(
@@ -327,7 +495,8 @@ function enable() {
       qwantSearchProvider
     );
   }
-  Main.panel._rightBox.insert_child_at_index(button, 0);
+  if (preferences.get_boolean('panel-button'))
+    Main.panel._rightBox.insert_child_at_index(button, 0);
 }
 
 function disable() {
