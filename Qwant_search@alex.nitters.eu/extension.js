@@ -107,39 +107,39 @@ function makeLaunchContext(params) {
 const QwantSearchProvider = new Lang.Class({
   Name: 'QwantSearchProvider',
 
-  _init : function() {
+  _init : () => {
     this.id = 'qwant-search';
     this.appInfo = {
-      get_name : function() {
+      get_name : () => {
         return _("Recherche Qwant");
       },
-      get_icon : function() {
+      get_icon : () => {
         return Gio.icon_new_for_string(
           Me.path + "/icons/qwant_logo.png"
         );
       },
-      get_id : function() {
+      get_id : () => {
         return this.id;
       }
     };
     this.qwantResults = new Map();
   },
 
-  _getResultSet: function(terms) {
+  _getResultSet: (terms) => {
     logDebug("getResultSet");
     const resultIds = Array.from(this.qwantResults.keys())
     logDebug("found " + resultIds.length + " results" );
     return resultIds;
   },
 
-  getResultMetas: function(resultIds, callback) {
+  getResultMetas: (resultIds, callback) => {
     logDebug("result metas for name: "+resultIds.join(" "));
     const metas = resultIds.map(id => this.getResultMeta(id));
     logDebug("metas: " + metas.join(" "));
     callback(metas);
   },
 
-  getResultMeta: function(resultId) {
+  getResultMeta: (resultId) => {
     const result = this.qwantResults.get(resultId);
     const name = result.name;
     const description = result.description;
@@ -153,7 +153,7 @@ const QwantSearchProvider = new Lang.Class({
     }
   },
 
-  processTerms: function(terms, callback, cancellable, isSearch, category) {
+  processTerms: (terms, callback, cancellable, isSearch, category) => {
     this.qwantResults.clear();
     const joined = terms.join(" ");
     let url = null;
@@ -176,7 +176,7 @@ const QwantSearchProvider = new Lang.Class({
           .replace("{category}", translations[original.indexOf(category)])
           .replace("{engine}", translations[original.indexOf(preferences.get_string("search-engine"))]),
         " ",
-        function() {},
+        () => {},
         url
       )
     );
@@ -193,7 +193,7 @@ const QwantSearchProvider = new Lang.Class({
     }
   },
 
-  getSuggestions: function(terms, callback) {
+  getSuggestions: (terms, callback) => {
     const joined = terms.join(" ");
     let suggestions = {};
     const request = Soup.form_request_new_from_hash(
@@ -271,7 +271,7 @@ const QwantSearchProvider = new Lang.Class({
 
   },
 
-  getSearchResults: function(terms, callback, category) {
+  getSearchResults: (terms, callback, category) => {
     const joined = terms.join(" ");
     let results = {};
     const request = Soup.form_request_new_from_hash(
@@ -290,7 +290,7 @@ const QwantSearchProvider = new Lang.Class({
     currentRequest = request;
 
     _httpSession.queue_message(request, Lang.bind(this,
-      function (_httpSession, response) {
+      (_httpSession, response) => {
         logDebug("Statuscode: " + response.status_code);
         if (response.status_code === 200) {
           const json = JSON.parse(response.response_body.data);
@@ -326,7 +326,7 @@ const QwantSearchProvider = new Lang.Class({
     );
   },
 
-  displaySuggestions: function(suggestions, callback, terms, isSearch) {
+  displaySuggestions: (suggestions, callback, terms, isSearch) => {
     if ((preferences.get_int('max-suggestions') != 0) && (isSearch == false)) {
       suggestions.splice(preferences.get_int("max-suggestions"), (suggestions.length - preferences.get_int("max-suggestions")));
     }
@@ -358,7 +358,7 @@ const QwantSearchProvider = new Lang.Class({
     callback(this._getResultSet(terms));
   },
 
-  activateResult: function(resultId, terms) {
+  activateResult: (resultId, terms) => {
     const result = this.qwantResults[resultId];
     logDebug("activateResult: " + resultId);
     const url = resultId;
@@ -369,7 +369,7 @@ const QwantSearchProvider = new Lang.Class({
     );
   },
 
-  launchSearch: function(result) {
+  launchSearch: (result) => {
     logDebug("launchSearch: " + result.name);
     Gio.app_info_launch_default_for_uri(
       "https://www.qwant.com/",
@@ -377,7 +377,7 @@ const QwantSearchProvider = new Lang.Class({
     );
   },
 
-  getInitialResultSet: function(terms, callback, cancellable) {
+  getInitialResultSet: (terms, callback, cancellable) => {
     logDebug("getInitialResultSet: " + terms.join(" "));
     searchUrl = searchUrlMap[preferences.get_string("search-engine")];
     suggestionsUrl = suggestionsUrlMap[preferences.get_string("search-engine")];
@@ -427,13 +427,13 @@ const QwantSearchProvider = new Lang.Class({
     }
   },
 
-  filterResults: function(results, maxResults) {
+  filterResults: (results, maxResults) => {
     logDebug("filterResults", results, maxResults);
     return results.slice(0, maxResults);
     //return results;
   },
 
-  getSubsearchResultSet: function(previousResults, terms, callback, cancellable) {
+  getSubsearchResultSet: (previousResults, terms, callback, cancellable) => {
     logDebug("getSubSearchResultSet: " + terms.join(" "));
     this.getInitialResultSet(terms, callback, cancellable, );
   },
@@ -474,7 +474,7 @@ function init(extensionMeta) {
   );
   button.connect(
     'enter-event',
-    function() {
+    () => {
       _SetButtonIcon('hover');
     }
   );
